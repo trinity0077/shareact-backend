@@ -8,7 +8,7 @@ const userSchema = mongoose.Schema({
   password: String,
   age: Number,
   gender: String,
-  DateCreation: Date,
+  dateCreation: Date,
   followedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
   token: String,
 });
