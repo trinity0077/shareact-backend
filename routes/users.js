@@ -9,27 +9,29 @@ const uid2 = require("uid2");
 
 // Inscription
 router.post("/signup", (req, res) => {
-  if (!checkBody(req.body, ["firstname", "username", "email", "password"])) {
+  if (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender"])) {
     console.log(req.body)
     res.json({ result: false, error: "Missing or empty fields" });
     return;
   }
-
   // Check if the user has not already been registered
   User.findOne({
-    username: { $regex: new RegExp(req.body.username, "i") },
+    email: { $regex: new RegExp(req.body.email, "i") },
   }).then((data) => {
     if (data === null) {
       const hash = bcrypt.hashSync(req.body.password, 10);
 
       const newUser = new User({
-        firstName: req.body.firstName,
+        firstname: req.body.firstname,
         username: req.body.username,
         email: req.body.email,
+        image:req.body.image,
         password: hash,
+        age: req.body.age,
+        gender: req.body.gender,
+        dateCreation: Date.now(),
         token: uid2(32),
       });
-
       newUser.save().then((newDoc) => {
         res.json({ result: true, token: newDoc.token });
       });
@@ -53,8 +55,12 @@ router.post("/signin", (req, res) => {
         res.json({
           result: true,
           token: data.token,
+          firstName: data.firstname,
+          username: data.username,
           email: data.email,
-          firstName: data.firstName,
+          image:data.image,
+          age: data.age,
+          gender: data.gender,
         });
       } else {
         res.json({ result: false, error: "User not found or wrong password" });
