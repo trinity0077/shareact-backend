@@ -51,7 +51,7 @@ router.post("/signin", (req, res) => {
 
   User.findOne({ email: { $regex: new RegExp(req.body.email, "i") } }).then(
     (data) => {
-      if (bcrypt.compareSync(req.body.password, data.password)) {
+      if (data !== null && bcrypt.compareSync(req.body.password, data.password)) {
         res.json({
           result: true,
           token: data.token,
