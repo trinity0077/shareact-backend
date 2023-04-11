@@ -55,7 +55,7 @@ router.post("/signin", (req, res) => {
         res.json({
           result: true,
           token: data.token,
-          firstName: data.firstname,
+          firstname: data.firstname,
           username: data.username,
           email: data.email,
           image:data.image,
