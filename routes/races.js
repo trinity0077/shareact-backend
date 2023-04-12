@@ -11,6 +11,8 @@ const { checkBody } = require("../modules/checkBody");
 router.get('/all/:token', (req, res) => {
 
     User.findOne({ token: req.params.token }).then(user => {
+router.get('/allRaces', function(req, res) {
+    Race.find().then(user => {
       if (user === null) {
         res.json({ result: false, error: 'User not found' });
         return;
@@ -52,7 +54,8 @@ router.post('/', (req, res) => {
       duration:req.body.duration,
       distance:req.body.distance,
       level:req.body.distance,
-      dateCreation: new Date(),
+      dateCreation: Date.now(),
+      token: req.body.token,
     });
     newRace.save().then(newR => {
       res.json({ result: true, race: newR });
