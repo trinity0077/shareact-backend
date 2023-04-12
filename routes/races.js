@@ -17,7 +17,7 @@ router.get('/allRaces', function(req, res) {
       Race.find() // Populate and select specific fields to return (for security purposes)
       .populate('author', ['_id'])
       .populate('admin', ['_id', ])
-      .populate('participant',['_id','alias', 'image'])
+      .populate('participants',['_id','username', 'image'])
       .sort({ createdAt: 'desc' })
         .then(races => {
           res.json({ result: true, races });
