@@ -25,7 +25,7 @@ router.post("/signup", (req, res) => {
         firstname: req.body.firstname,
         username: req.body.username,
         email: req.body.email,
-        image:req.body.image,
+       // image:req.body.image,
         password: hash,
         age:new Date(req.body.age),
         gender: req.body.gender,
@@ -58,7 +58,7 @@ router.post("/signin", (req, res) => {
           firstname: data.firstname,
           username: data.username,
           email: data.email,
-          image:data.image,
+          //image:data.image,
           age: data.age,
           gender: data.gender,
         });
