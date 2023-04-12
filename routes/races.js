@@ -8,8 +8,7 @@ const Race = require("../models/races");
 const { checkBody } = require("../modules/checkBody");
 
 // GET
-router.get('/all', function(req, res) {
-
+router.get('/allRaces', function(req, res) {
     Race.find().then(user => {
       if (user === null) {
         res.json({ result: false, error: 'No races' });
@@ -18,7 +17,7 @@ router.get('/all', function(req, res) {
       Race.find() // Populate and select specific fields to return (for security purposes)
       .populate('author', ['_id'])
       .populate('admin', ['_id', ])
-      .populate('participant',['_id','firstname','username', ])
+      .populate('participant',['_id','alias', 'image'])
       .sort({ createdAt: 'desc' })
         .then(races => {
           res.json({ result: true, races });
@@ -45,12 +44,12 @@ router.post('/', function(req, res) {
       description: req.body.description,
       type: req.body.type,
       date: req.body.date,
-      address: req.body.adress,
+      address: req.body.address,
       latitude:req.body.latitude,
       longitude:req.body.longitude,
       duration:req.body.duration,
       distance:req.body.distance,
-      level:req.body.distance,
+      level:req.body.level,
       dateCreation: Date.now(),
       token: req.body.token,
     });
