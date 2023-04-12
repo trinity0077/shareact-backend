@@ -14,7 +14,7 @@ const raceSchema = mongoose.Schema({
     distance:Number,
     level:String,
     dateCreation: Date,
-    //token: String,
+    token: String,
   });
 const Race = mongoose.model('races', raceSchema);
 
