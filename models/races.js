@@ -4,6 +4,7 @@ const raceSchema = mongoose.Schema({
     author:{ type: mongoose.Schema.Types.ObjectId, ref: 'users' },
     admin:{ type: mongoose.Schema.Types.ObjectId, ref: 'users' },
     participants:[{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
+    maxParticipants: Number,
     description: String,
     type: String,
     date: Date,

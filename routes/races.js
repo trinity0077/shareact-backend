@@ -29,7 +29,7 @@ router.get('/all/:token', (req, res) => {
 // POST
 router.post('/', (req, res) => {
   if (!checkBody(req.body, ["token", "description", "date","address","latitude", "longitude",
-  "duration", "distance", "level"])) {
+  "duration", "distance", "level", "maxParticipants"])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
   }
@@ -43,6 +43,7 @@ router.post('/', (req, res) => {
       author:user._id,
       admin:user._id,
       participants:user._id,
+      maxParticipants: req.body.maxParticipants,
       description: req.body.description,
       type: "running",
       date: req.body.date,
