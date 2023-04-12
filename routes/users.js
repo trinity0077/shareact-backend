@@ -27,7 +27,7 @@ router.post("/signup", (req, res) => {
         email: req.body.email,
         image:req.body.image,
         password: hash,
-        age: req.body.age,
+        age:new Date(req.body.age),
         gender: req.body.gender,
         dateCreation: Date.now(),
         token: uid2(32),
