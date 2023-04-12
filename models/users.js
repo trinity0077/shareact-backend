@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
   email: String,
   image: String,
   password: String,
-  age: Number,
+  age: Date,
   gender: String,
   dateCreation: Date,
   followedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
