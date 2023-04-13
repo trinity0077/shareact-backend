@@ -69,4 +69,22 @@ router.post("/signin", (req, res) => {
   );
 });
 
+//  route pour envoyé l image a cloudinary et recuperer l url de l image en front
+router.post('/upload', async (req, res) => {
+  let id = uniqid()
+const photoPath = `/tmp/${id}.jpg`;
+const resultMove = await req.files.photoFromFront.mv(photoPath);
+
+if (!resultMove) {
+
+const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+
+fs.unlinkSync(photoPath);
+console.log('teste de  reponse cloudinary',resultCloudinary)
+res.json({ result: true, url: resultCloudinary.secure_url });    
+} else {
+ res.json({ result: false, error: resultMove });
+}
+});
+
 module.exports = router;
