@@ -14,7 +14,7 @@ const uniqid = require('uniqid');
 
 // Inscription
 router.post("/signup", (req, res) => {
-  if (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender"])) {
+  if (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender", "image"])) {
     console.log(req.body)
     res.json({ result: false, error: "Missing or empty fields" });
     return;
