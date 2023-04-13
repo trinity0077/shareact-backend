@@ -7,6 +7,11 @@ const { checkBody } = require("../modules/checkBody");
 const bcrypt = require("bcrypt");
 const uid2 = require("uid2");
 
+// 3 const en dessou pour la save de la photo
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+const uniqid = require('uniqid');
+
 // Inscription
 router.post("/signup", (req, res) => {
   if (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender"])) {
