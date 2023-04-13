@@ -52,7 +52,7 @@ router.post('/', (req, res) => {
       longitude:req.body.longitude,
       duration:req.body.duration,
       distance:req.body.distance,
-      level:req.body.distance,
+      level:req.body.level,
       dateCreation: new Date(),
     });
     newRace.save().then(newR => {
