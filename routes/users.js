@@ -7,9 +7,14 @@ const { checkBody } = require("../modules/checkBody");
 const bcrypt = require("bcrypt");
 const uid2 = require("uid2");
 
+// 3 const en dessou pour la save de la photo
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+const uniqid = require('uniqid');
+
 // Inscription
 router.post("/signup", (req, res) => {
-  if (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender"])) {
+  if (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender", "image"])) {
     console.log(req.body)
     res.json({ result: false, error: "Missing or empty fields" });
     return;
@@ -25,7 +30,7 @@ router.post("/signup", (req, res) => {
         firstname: req.body.firstname,
         username: req.body.username,
         email: req.body.email,
-       // image:req.body.image,
+        image:req.body.image,
         password: hash,
         age:new Date(req.body.age),
         gender: req.body.gender,
@@ -57,8 +62,8 @@ router.post("/signin", (req, res) => {
           token: data.token,
           firstname: data.firstname,
           username: data.username,
-          email: data.email,
-          //image:data.image,
+        //  email: data.email,
+          image:data.image,
           age: data.age,
           gender: data.gender,
         });
@@ -67,6 +72,24 @@ router.post("/signin", (req, res) => {
       }
     }
   );
+});
+
+//  route pour envoyé l image a cloudinary et recuperer l url de l image en front
+router.post('/upload', async (req, res) => {
+  let id = uniqid()
+const photoPath = `/tmp/${id}.jpg`;
+const resultMove = await req.files.photoFromFront.mv(photoPath);
+
+if (!resultMove) {
+
+const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+
+fs.unlinkSync(photoPath);
+console.log('teste de  reponse cloudinary',resultCloudinary)
+res.json({ result: true, image: resultCloudinary.secure_url });    
+} else {
+ res.json({ result: false, error: resultMove });
+}
 });
 
 module.exports = router;
