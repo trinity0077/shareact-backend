@@ -30,7 +30,7 @@ router.post("/signup", (req, res) => {
         firstname: req.body.firstname,
         username: req.body.username,
         email: req.body.email,
-       // image:req.body.image,
+        image:req.body.image,
         password: hash,
         age:new Date(req.body.age),
         gender: req.body.gender,
@@ -62,8 +62,8 @@ router.post("/signin", (req, res) => {
           token: data.token,
           firstname: data.firstname,
           username: data.username,
-          email: data.email,
-          //image:data.image,
+        //  email: data.email,
+          image:data.image,
           age: data.age,
           gender: data.gender,
         });
@@ -86,7 +86,7 @@ const resultCloudinary = await cloudinary.uploader.upload(photoPath);
 
 fs.unlinkSync(photoPath);
 console.log('teste de  reponse cloudinary',resultCloudinary)
-res.json({ result: true, url: resultCloudinary.secure_url });    
+res.json({ result: true, image: resultCloudinary.secure_url });    
 } else {
  res.json({ result: false, error: resultMove });
 }
