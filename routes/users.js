@@ -12,6 +12,11 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const uniqid = require('uniqid');
 
+// 2 variable pour avoir les info sur la route du 
+//dossier temporaire de vercelle
+const os = require('os');
+const path = require('path');
+
 // Inscription
 router.post("/signup", (req, res) => {
   if (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender", "image"])) {
@@ -77,9 +82,8 @@ router.post("/signin", (req, res) => {
 //  route pour envoyé l image a cloudinary et recuperer l url de l image en front
 router.post('/upload', async (req, res) => {
   let id = uniqid()
-const photoPath = `/tmp/${id}.jpg`;
+const photoPath = path.join(os.tmpdir(), `${id}.jpg`);
 const resultMove = await req.files.photoFromFront.mv(photoPath);
-
 if (!resultMove) {
 
 const resultCloudinary = await cloudinary.uploader.upload(photoPath);
