@@ -100,13 +100,13 @@ res.json({ result: true, image: resultCloudinary.secure_url });
 router.put('/changesprofil', (req, res) => {
   User.findOne({email: req.body.email }).then(user => {
     if (user === null) {
-      res.json({ result: false, error: 'User not found' });
+      res.json({ result: false, msg: 'User not found' });
       return;
     }
     const updatedFields = {
       firstname: req.body.firstname,
       username: req.body.username,
-      email: req.body.email,
+      //email: req.body.email,
       image:req.body.image,  
     }; 
     const filter = { email: req.body.email}; 
