@@ -98,18 +98,18 @@ res.json({ result: true, image: resultCloudinary.secure_url });
 
 // PUT pour modifier le profil
 router.put('/changesprofil', (req, res) => {
-  User.findOne({email: req.body.email }).then(user => {
+  User.findOne({ token: req.body.token }).then(user => {
     if (user === null) {
-      res.json({ result: false, msg: 'User not found' });
+      res.json({ result: false, error: 'User not found' });
       return;
     }
     const updatedFields = {
       firstname: req.body.firstname,
       username: req.body.username,
-      //email: req.body.email,
+      email: req.body.email,
       image:req.body.image,  
     }; 
-    const filter = { email: req.body.email}; 
+    const filter = { token: req.body.token}; 
     User.updateOne(filter, updatedFields)
     .then(() => {
      
