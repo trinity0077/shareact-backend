@@ -98,29 +98,22 @@ res.json({ result: true, image: resultCloudinary.secure_url });
 
 // PUT pour modifier le profil
 router.put('/changesprofil', (req, res) => {
-  if (!checkBody(req.body, [["firstname", "username", "email", "password", "age", "image"]])) {
-    res.json({ result: false, error: 'Missing a field' });
-    return;
-  }
-
-  User.findOne({ email: req.body.email }).then(user => {
+  User.findOne({email: req.body.email }).then(user => {
     if (user === null) {
       res.json({ result: false, error: 'User not found' });
       return;
     }
-
     const updatedFields = {
       firstname: req.body.firstname,
       username: req.body.username,
       email: req.body.email,
-      age: req.body.age,
-    };
-    
-    const filter = { _id: '64352b27c1b35d60488ebb77' }; 
-  
+      image:req.body.image,  
+    }; 
+    const filter = { email: req.body.email}; 
     User.updateOne(filter, updatedFields)
     .then(() => {
-      console.log('Mise à jour réussie !');
+     
+      res.json({ result: true, msg: 'Mise à jour réussie' });
     })
     });
   });
