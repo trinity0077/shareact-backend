@@ -10,49 +10,77 @@ const { checkBody } = require("../modules/checkBody");
 // GET
 router.get('/all/:token', (req, res) => {
 
-    User.findOne({ token: req.params.token }).then(user => {
-      if (user === null) {
-        res.json({ result: false, error: 'User not found' });
-        return;
-      }
-      Race.find() // Populate and select specific fields to return (for security purposes)
+  User.findOne({ token: req.params.token }).then(user => {
+    if (user === null) {
+      res.json({ result: false, error: 'User not found' });
+      return;
+    }
+    Race.find() // Populate and select specific fields to return (for security purposes)
       .populate('author', ['username', 'firstname'])
       .populate('admin', ['username', 'firstname'])
-      .populate('participants',['username','firstname'] )
+      .populate('participants', ['username', 'firstname'])
       .sort({ dateCreation: 'desc' })
-        .then(races => {
-          res.json({ result: true, races });
-        });
-    });
+      .then(races => {
+        res.json({ result: true, races });
+      });
   });
+});
 
-// POST
-router.post('/', (req, res) => {
-  if (!checkBody(req.body, ["token", "description", "date","address","latitude", "longitude",
-  "duration", "distance", "level", "maxParticipants"])) {
+
+// GET selon l'ID de la course 
+router.get('/:idRace/:token', (req, res) => {
+  if (!checkBody(req.params, ['idRace', 'token'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
   }
-  User.findOne({ token: req.body.token }).then(user => {  
+
+  User.findOne({ token: req.params.token }).then(user => {
     if (user === null) {
       res.json({ result: false, error: 'User not found' });
       return;
     }
 
-    const newRace = new Race({  
-      author:user._id,
-      admin:user._id,
-      participants:user._id,
+    Race.findById(req.params.idRace)
+      .populate('author', ['_id', 'username'])
+      .populate('admin', ['_id', 'username', 'firstname'])
+      .populate('participants', ['_id', 'username', 'firstname'])
+      .then(race => {
+        if (!race) {
+          res.json({ result: false, error: 'Race not found' });
+          return;
+        }
+        res.json({ result: true, race });
+      });
+  });
+});
+
+// POST
+router.post('/', (req, res) => {
+  if (!checkBody(req.body, ["token", "description", "date", "address", "latitude", "longitude",
+    "duration", "distance", "level", "maxParticipants"])) {
+    res.json({ result: false, error: 'Missing or empty fields' });
+    return;
+  }
+  User.findOne({ token: req.body.token }).then(user => {
+    if (user === null) {
+      res.json({ result: false, error: 'User not found' });
+      return;
+    }
+
+    const newRace = new Race({
+      author: user._id,
+      admin: user._id,
+      participants: user._id,
       maxParticipants: req.body.maxParticipants,
       description: req.body.description,
       type: "running",
       date: req.body.date,
       address: req.body.address,
-      latitude:req.body.latitude,
-      longitude:req.body.longitude,
-      duration:req.body.duration,
-      distance:req.body.distance,
-      level:req.body.level,
+      latitude: req.body.latitude,
+      longitude: req.body.longitude,
+      duration: req.body.duration,
+      distance: req.body.distance,
+      level: req.body.level,
       dateCreation: new Date(),
     });
     newRace.save().then(newR => {
