@@ -3,6 +3,7 @@ var router = express.Router();
 
 require("../models/connection");
 const User = require("../models/users");
+const Race = require("../models/races");
 const { checkBody } = require("../modules/checkBody");
 const bcrypt = require("bcrypt");
 const uid2 = require("uid2");
@@ -118,5 +119,42 @@ router.put('/changesprofil', (req, res) => {
   });
 });
 
+// GET les courses selon l'ID de l utilisateur
+router.get('/add/:token', (req, res) => {
+  console.log('req.paramas.token',req.params.token)
+  if (!req.params.token) {
+    res.json({ result: false, error: 'Missing or empty fields' });
+    return;
+  }
+  User.findOne({ token: req.params.token }).then(user => {
+console.log('userdata',user)
+      let idUser =''
+    if (user === null) {
+      res.json({ result: false, error: 'User not found2' });
+      return;
+    }else{
+      idUser = user._id
+      console.log(user._id)
+    }
+
+    Race.find({
+      $or: [
+        { author: idUser },
+        { participants: { $elemMatch: { $eq: idUser } } }
+      ]
+    })
+      .populate('author', ['username'])
+      .populate('participants', ['username'])
+    .sort({ dateCreation: 'desc' })
+      .then(race => {
+        console.log(race)
+        if (!race) {
+          res.json({ result: false, error: 'Race not found' });
+          return;
+        }
+        res.json({ result: true, race });
+      });
+  });
+});
 
 module.exports = router;
