@@ -99,6 +99,7 @@ res.json({ result: true, image: resultCloudinary.secure_url });
 // PUT pour modifier le profil
 router.put('/changesprofil', (req, res) => {
   User.findOne({ token: req.body.token }).then(user => {
+    console.log(req.body)
     if (user === null) {
       res.json({ result: false, error: 'User not found' });
       return;
