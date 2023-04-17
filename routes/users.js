@@ -36,7 +36,7 @@ router.post("/signup", (req, res) => {
         firstname: req.body.firstname,
         username: req.body.username,
         email: req.body.email,
-        //     image:req.body.image,
+        // image: req.body.image,
         password: hash,
         age: new Date(req.body.age),
         gender: req.body.gender,
@@ -100,6 +100,7 @@ router.post('/upload', async (req, res) => {
 // PUT pour modifier le profil
 router.put('/changesprofil', (req, res) => {
   User.findOne({ token: req.body.token }).then(user => {
+    console.log(req.body)
     if (user === null) {
       res.json({ result: false, error: 'User not found' });
       return;
