@@ -158,41 +158,6 @@ router.put('/participants', (req, res) => {
   });
 });
 
-// GET les courses selon l'ID de l utilisateur
-router.get('/:token', (req, res) => {
-  if (!checkBody(req.params.token)) {
-    res.json({ result: false, error: 'Missing or empty fields' });
-    return;
-  }
-  User.findOne({ token: req.params.token }).then(user => {
 
-      let idUser =''
-    if (user === null) {
-      res.json({ result: false, error: 'User not found' });
-      return;
-    }else{
-      idUser = user._id
-    }
-
-    Race.find({
-      $or: [
-        { author: idUser },
-        { participants: { $elemMatch: { $eq: idUser } } }
-      ]
-    })
-    .populate('author', ['username', 'firstname'])
-    .populate('admin', ['username', 'firstname'])
-    .populate('participants', ['username', 'firstname'])
-    .sort({ dateCreation: 'desc' })
-      .then(race => {
-        console.log(race)
-        if (!race) {
-          res.json({ result: false, error: 'Race not found' });
-          return;
-        }
-        res.json({ result: true, race });
-      });
-  });
-});
 
 module.exports = router;
