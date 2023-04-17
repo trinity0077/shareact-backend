@@ -174,7 +174,12 @@ router.get('/:token', (req, res) => {
       idUser = user._id
     }
 
-    Race.find({ $or: [{ author: idUser }, { participants: idUser }] })
+    Race.find({
+      $or: [
+        { author: idUser },
+        { participants: { $elemMatch: { $eq: idUser } } }
+      ]
+    })
     .populate('author', ['username', 'firstname'])
     .populate('admin', ['username', 'firstname'])
     .populate('participants', ['username', 'firstname'])
