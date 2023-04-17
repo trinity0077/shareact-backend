@@ -3,7 +3,6 @@ var router = express.Router();
 
 require("../models/connection");
 const User = require("../models/users");
-const Race = require("../models/races");
 const { checkBody } = require("../modules/checkBody");
 const bcrypt = require("bcrypt");
 const uid2 = require("uid2");
@@ -36,7 +35,7 @@ router.post("/signup", (req, res) => {
         firstname: req.body.firstname,
         username: req.body.username,
         email: req.body.email,
-        // image: req.body.image,
+        //     image:req.body.image,
         password: hash,
         age: new Date(req.body.age),
         gender: req.body.gender,
@@ -100,7 +99,6 @@ router.post('/upload', async (req, res) => {
 // PUT pour modifier le profil
 router.put('/changesprofil', (req, res) => {
   User.findOne({ token: req.body.token }).then(user => {
-    console.log(req.body)
     if (user === null) {
       res.json({ result: false, error: 'User not found' });
       return;
@@ -120,40 +118,5 @@ router.put('/changesprofil', (req, res) => {
   });
 });
 
-// GET les courses selon l'ID de l utilisateur
-router.get('/add/:token', (req, res) => {
-  if (!req.params.token) {
-    res.json({ result: false, error: 'Missing or empty fields' });
-    return;
-  }
-  User.findOne({ token: req.params.token }).then(user => {
-      let idUser =''
-    if (user === null) {
-      res.json({ result: false, error: 'User not found2' });
-      return;
-    }else{
-      idUser = user._id
-      console.log(user._id)
-    }
-
-    Race.find({
-      $or: [
-        { author: idUser },
-        { participants: { $elemMatch: { $eq: idUser } } }
-      ]
-    })
-      .populate('author', ['username'])
-      .populate('participants', ['username'])
-    .sort({ dateCreation: 'desc' })
-      .then(race => {
-        console.log(race)
-        if (!race) {
-          res.json({ result: false, error: 'Race not found' });
-          return;
-        }
-        res.json({ result: true, race });
-      });
-  });
-});
 
 module.exports = router;
