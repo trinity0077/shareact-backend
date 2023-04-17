@@ -7,6 +7,9 @@ const User = require('../models/users');
 const Race = require("../models/races");
 const { checkBody } = require("../modules/checkBody");
 
+const geolib = require('geolib'); // une librairie pour les calculs de distance
+
+
 // GET
 router.get('/all/:token', (req, res) => {
   const currentDate = new Date();
@@ -156,6 +159,63 @@ router.put('/participants', (req, res) => {
       }
     });
   });
+});
+
+// POST filtre suivant l'horaire de départ et la distance maxy
+// Endpoint pour filtrer les données selon la date de début, la date de fin et la distance depuis la géolocalisation
+router.post('/filter', async (req, res) => {
+
+  const { start_date, end_date, lat, lon, distance } = req.body; // récupération des paramètres de la requête
+
+  if (!checkBody(req.body, [])) {
+    res.json({ result: false, error: 'Missing or empty fields' });
+    return;
+  }
+  const currentDate = new Date();
+  // User.findOne({ token: req.params.token }).then(user => {
+  //   if (user === null) {
+  //     res.json({ result: false, error: 'User not found' });
+  //     return;
+  //   }
+    Race.find({ date: { $gte: currentDate } }) // Populate and select specific fields to return (for security purposes)
+      .populate('author', ['username', 'firstname'])
+      .populate('admin', ['username', 'firstname'])
+      .populate('participants', ['username', 'firstname'])
+      .sort({ dateCreation: 'desc' })
+      .then(data => {
+      // traintement des datas
+
+            console.log(data)
+
+
+
+            // filtrage des données selon la date de début et la date de fin
+            const filteredData = data.filter((item) => {
+              return item.date >= new Date(start_date) && item.date <= new Date(end_date);
+            });
+
+            // filtrage des données selon la distance depuis la géolocalisation
+            const filteredDataByDistance = data.filter((item) => {
+              const distanceFromLocation = geolib.getDistance(
+                { latitude: lat, longitude: lon },
+                { latitude: item.latitude, longitude: item.longitude }
+              );
+              console.log(distanceFromLocation)
+              return distanceFromLocation <= distance;
+            });
+
+            res.json({ data: filteredDataByDistance });
+
+
+
+      });
+   // });
+
+  
+
+
+
+ 
 });
 
 
