@@ -15,7 +15,7 @@ router.get('/all/:token', (req, res) => {
       res.json({ result: false, error: 'User not found' });
       return;
     }
-    Race.find() // Populate and select specific fields to return (for security purposes)
+    Race.find({ dateCreation: { $gte: currentDate } }) // Populate and select specific fields to return (for security purposes)
       .populate('author', ['username', 'firstname'])
       .populate('admin', ['username', 'firstname'])
       .populate('participants', ['username', 'firstname'])
