@@ -143,6 +143,9 @@ console.log('userdata',user)
         { participants: { $elemMatch: { $eq: idUser } } }
       ]
     })
+      .populate('author', ['_id', 'username'])
+      .populate('admin', ['_id', 'username', 'firstname'])
+      .populate('participants', ['_id', 'username', 'firstname'])
     .sort({ dateCreation: 'desc' })
       .then(race => {
         console.log(race)
