@@ -159,15 +159,14 @@ router.put('/participants', (req, res) => {
 });
 
 // GET les courses selon l'ID de l utilisateur
-router.get('/:idRace/:token', (req, res) => {
-  if (!checkBody(req.params, ['idRace', 'token'])) {
+router.get('/:token', (req, res) => {
+  if (!checkBody(req.params.token)) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
   }
-
   User.findOne({ token: req.params.token }).then(user => {
 
-const idUser =''
+      let idUser =''
     if (user === null) {
       res.json({ result: false, error: 'User not found' });
       return;
