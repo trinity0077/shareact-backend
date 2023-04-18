@@ -195,7 +195,7 @@ router.post('/filter', async (req, res) => {
             });
 
             // filtrage des données selon la distance depuis la géolocalisation
-            const filteredDataByDistance = data.filter((item) => {
+            const filteredDataByDistance = filteredData.filter((item) => {
               const distanceFromLocation = geolib.getDistance(
                 { latitude: lat, longitude: lon },
                 { latitude: item.latitude, longitude: item.longitude }
