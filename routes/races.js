@@ -44,9 +44,9 @@ router.get('/:idRace/:token', (req, res) => {
     }
 
     Race.findById(req.params.idRace)
-      .populate('author', ['_id', 'username'])
-      .populate('admin', ['_id', 'username', 'firstname'])
-      .populate('participants', ['_id', 'username', 'firstname'])
+      .populate('author', ['_id', 'username', 'image'])
+      .populate('admin', ['_id', 'username', 'firstname', 'image'])
+      .populate('participants', ['_id', 'username', 'firstname', 'image'])
       .then(race => {
         if (!race) {
           res.json({ result: false, error: 'Race not found' });

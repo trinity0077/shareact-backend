@@ -29,14 +29,14 @@ router.post("/signup", (req, res) => {
   User.findOne({
     email: { $regex: new RegExp(req.body.email, "i") },
   }).then((data) => {
+    console.log(data)
     if (data === null) {
       const hash = bcrypt.hashSync(req.body.password, 10);
-
       const newUser = new User({
         firstname: req.body.firstname,
         username: req.body.username,
         email: req.body.email,
-        image: req.body.image,
+        //     image:req.body.image,
         password: hash,
         age: new Date(req.body.age),
         gender: req.body.gender,
@@ -100,7 +100,6 @@ router.post('/upload', async (req, res) => {
 // PUT pour modifier le profil
 router.put('/changesprofil', (req, res) => {
   User.findOne({ token: req.body.token }).then(user => {
-    console.log(req.body)
     if (user === null) {
       res.json({ result: false, error: 'User not found' });
       return;
@@ -120,40 +119,44 @@ router.put('/changesprofil', (req, res) => {
   });
 });
 
-// GET les courses selon l'ID de l utilisateur
 router.get('/add/:token', (req, res) => {
-  console.log('req.paramas.token',req.params.token)
+  console.log('req.paramas.token', req.params.token);
   if (!req.params.token) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
   }
-  User.findOne({ token: req.params.token }).then(user => {
-console.log('userdata',user)
-      let idUser =''
+  User.findOne({ token: req.params.token }).then((user) => {
+    console.log('userdata', user);
+    let idUser = '';
     if (user === null) {
       res.json({ result: false, error: 'User not found2' });
       return;
-    }else{
-      idUser = user._id
-      console.log(user._id)
+    } else {
+      idUser = user._id;
+      console.log(user._id);
     }
-
     Race.find({
       $or: [
         { author: idUser },
-        { participants: { $elemMatch: { $eq: idUser } } }
-      ]
+        { participants: { $elemMatch: { $eq: idUser } } },
+      ],
     })
       .populate('author', ['username'])
       .populate('participants', ['username'])
-    .sort({ dateCreation: 'desc' })
-      .then(race => {
-        console.log(race)
-        if (!race) {
-          res.json({ result: false, error: 'Race not found' });
+      .sort({ dateCreation: 'desc' })
+      .then((races) => {
+        console.log('races où participe l user', races);
+        if (!races) {
+          res.json({ result: false, error: 'Races not found' });
           return;
         }
-        res.json({ result: true, race });
+        const formattedRaces = races.map((race) => {
+          const formattedParticipants = race.participants
+            .map((participant) => `@${participant.username}`)
+            .join(', ');
+          return { ...race.toObject(), participants: formattedParticipants };
+        });
+        res.json({ result: true, races: formattedRaces });
       });
   });
 });
