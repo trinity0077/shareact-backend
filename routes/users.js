@@ -153,7 +153,7 @@ router.get('/add/:token', (req, res) => {
         const formattedRaces = races.map((race) => {
           const formattedParticipants = race.participants
             .map((participant) => participant.username)
-            .join(' ');
+            .join(', ');
           return { ...race.toObject(), participants: formattedParticipants };
         });
         res.json({ result: true, races: formattedRaces });
