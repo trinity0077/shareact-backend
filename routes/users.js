@@ -83,7 +83,7 @@ router.post("/signin", (req, res) => {
 //  route pour envoyé l image a cloudinary et recuperer l url de l image en front
 router.post('/upload', async (req, res) => {
 
-  console.log(req.files.photoFromFront)
+  
 
   let id = uniqid()
   
