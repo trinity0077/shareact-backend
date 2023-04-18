@@ -3,6 +3,7 @@ var router = express.Router();
 
 require("../models/connection");
 const User = require("../models/users");
+const Race = require("../models/races");
 const { checkBody } = require("../modules/checkBody");
 const bcrypt = require("bcrypt");
 const uid2 = require("uid2");
@@ -119,40 +120,43 @@ router.put('/changesprofil', (req, res) => {
 });
 
 router.get('/add/:token', (req, res) => {
-  console.log('req.paramas.token',req.params.token)
+  console.log('req.paramas.token', req.params.token);
   if (!req.params.token) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
   }
-  User.findOne({ token: req.params.token }).then(user => {
-console.log('userdata',user)
-      let idUser =''
+  User.findOne({ token: req.params.token }).then((user) => {
+    console.log('userdata', user);
+    let idUser = '';
     if (user === null) {
       res.json({ result: false, error: 'User not found2' });
       return;
-    }else{
-      idUser = user._id
-      console.log(user._id)
+    } else {
+      idUser = user._id;
+      console.log(user._id);
     }
     Race.find({
       $or: [
         { author: idUser },
-        { participants: { $elemMatch: { $eq: idUser } } }
-      ]
+        { participants: { $elemMatch: { $eq: idUser } } },
+      ],
     })
-      .populate('author', ['_id', 'username'])
-      .populate('admin', ['_id', 'username', 'firstname'])
-      .populate('participants', ['_id', 'username', 'firstname'])
       .populate('author', ['username'])
       .populate('participants', ['username'])
-    .sort({ dateCreation: 'desc' })
-      .then(race => {
-        console.log(race)
-        if (!race) {
-          res.json({ result: false, error: 'Race not found' });
+      .sort({ dateCreation: 'desc' })
+      .then((races) => {
+        console.log('races où participe l user', races);
+        if (!races) {
+          res.json({ result: false, error: 'Races not found' });
           return;
         }
-        res.json({ result: true, race });
+        const formattedRaces = races.map((race) => {
+          const formattedParticipants = race.participants
+            .map((participant) => participant.username)
+            .join(' ');
+          return { ...race.toObject(), participants: formattedParticipants };
+        });
+        res.json({ result: true, races: formattedRaces });
       });
   });
 });
