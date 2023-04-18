@@ -82,10 +82,12 @@ router.post("/signin", (req, res) => {
 
 //  route pour envoyé l image a cloudinary et recuperer l url de l image en front
 router.post('/upload', async (req, res) => {
-  
+
   console.log(req.files.photoFromFront)
+
   let id = uniqid()
-  const photoPath = path.join(os.tmpdir(), `${id}.jpg`);
+  
+  const photoPath = `/tmp/${id}.jpg`;
   const resultMove = await req.files.photoFromFront.mv(photoPath);
   if (!resultMove) {
 
@@ -101,6 +103,28 @@ router.post('/upload', async (req, res) => {
 
 // PUT pour modifier le profil
 router.put('/changesprofil', (req, res) => {
+  User.findOne({ token: req.body.token }).then(user => {
+    if (user === null) {
+      res.json({ result: false, error: 'User not found' });
+      return;
+    }
+    const updatedFields = {
+      firstname: req.body.firstname,
+      username: req.body.username,
+      email: req.body.email,
+      image: req.body.image,
+    };
+    const filter = { token: req.body.token };
+    User.updateOne(filter, updatedFields)
+      .then(() => {
+
+        res.json({ result: true, msg: 'Mise à jour réussie' });
+      })
+  });
+});
+
+// PUT pour modifier le profil
+router.put('/changesimageprofil', (req, res) => {
   User.findOne({ token: req.body.token }).then(user => {
     if (user === null) {
       res.json({ result: false, error: 'User not found' });
