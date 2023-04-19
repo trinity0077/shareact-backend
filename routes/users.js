@@ -166,7 +166,7 @@ router.get('/add/:token', (req, res) => {
     })
       .populate('author', ['username', 'image'])
       .populate('participants', ['username'])
-      .sort({ dateCreation: 'desc' })
+      .sort({ date: 'desc' })
       .then((races) => {
         console.log('races où participe l user', races);
         if (!races) {
