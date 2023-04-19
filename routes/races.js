@@ -19,9 +19,9 @@ router.get('/all/:token', (req, res) => {
       return;
     }
     Race.find({ date: { $gte: currentDate } }) // Populate and select specific fields to return (for security purposes)
-      .populate('author', ['username', 'firstname'])
+      .populate('author', ['username', 'firstname', 'image'])
       .populate('admin', ['username', 'firstname'])
-      .populate('participants', ['username', 'firstname'])
+      .populate('participants', ['username', 'firstname', 'image'])
       .sort({ dateCreation: 'desc' })
       .then(races => {
         res.json({ result: true, races });
@@ -113,7 +113,7 @@ router.delete('/', (req, res) => {
         if (!race) {
           res.json({ result: false, error: 'Race not found' });
           return;
-        } else if (String(race.author._id) !== String(user._id)) { // ObjectId needs to be converted to string (JavaScript cannot compare two objects)
+        } else if (String(race.author._id) !== String(user._id)) { 
           res.json({ result: false, error: 'Race can only be deleted by its author' });
           return;
         }
