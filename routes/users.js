@@ -164,7 +164,7 @@ router.get('/add/:token', (req, res) => {
         { participants: { $elemMatch: { $eq: idUser } } },
       ],
     })
-      .populate('author', ['username'])
+      .populate('author', ['username', 'image'])
       .populate('participants', ['username'])
       .sort({ dateCreation: 'desc' })
       .then((races) => {
