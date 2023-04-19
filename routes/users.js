@@ -131,9 +131,6 @@ router.put('/changesimageprofil', (req, res) => {
       return;
     }
     const updatedFields = {
-      firstname: req.body.firstname,
-      username: req.body.username,
-      email: req.body.email,
       image: req.body.image,
     };
     const filter = { token: req.body.token };
