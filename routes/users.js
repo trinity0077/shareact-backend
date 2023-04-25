@@ -80,26 +80,30 @@ router.post("/signin", (req, res) => {
   );
 });
 
-//  route pour envoyé l image a cloudinary et recuperer l url de l image en front
+//  route pour envoyé l'image à cloudinary et recuperer l url de l image en front
 router.post('/upload', async (req, res) => {
 
+  let id = uniqid() // generation d'un nom unique avec le module uniqid
   
+  const photoPath = `/tmp/${id}.jpg`; // acces au fichier temporaire de vercel /tmp/ et un id aleatoire en .jpg
+  const resultMove = await req.files.photoFromFront.mv(photoPath); // move the photo sent in the request to the temporary file
+  if (!resultMove) { // if the photo was successfully moved
 
-  let id = uniqid()
-  
-  const photoPath = `/tmp/${id}.jpg`;
-  const resultMove = await req.files.photoFromFront.mv(photoPath);
-  if (!resultMove) {
+    const resultCloudinary = await cloudinary.uploader.upload(photoPath); // upload the photo to Cloudinary
 
-    const resultCloudinary = await cloudinary.uploader.upload(photoPath);
-
-    fs.unlinkSync(photoPath);
-    console.log('teste de  reponse cloudinary', resultCloudinary)
-    res.json({ result: true, image: resultCloudinary.secure_url });
-  } else {
-    res.json({ result: false, error: resultMove });
+    fs.unlinkSync(photoPath); // delete the temporary file
+    console.log('response from Cloudinary', resultCloudinary);
+    res.json({ result: true, image: resultCloudinary.secure_url }); // send a response with the Cloudinary secure url of the uploaded image
+  } else { 
+    res.json({ result: false, error: resultMove }); 
   }
 });
+
+
+
+
+
+
 
 // PUT pour modifier le profil
 router.put('/changesprofil', (req, res) => {
@@ -142,6 +146,7 @@ router.put('/changesimageprofil', (req, res) => {
   });
 });
 
+// GET  pour renvoyé la liste des participants à un course
 router.get('/add/:token', (req, res) => {
   console.log('req.paramas.token', req.params.token);
   if (!req.params.token) {
@@ -149,24 +154,26 @@ router.get('/add/:token', (req, res) => {
     return;
   }
   User.findOne({ token: req.params.token }).then((user) => {
-    console.log('userdata', user);
+    //console.log('userdata', user);
     let idUser = '';
     if (user === null) {
       res.json({ result: false, error: 'User not found2' });
       return;
     } else {
       idUser = user._id;
-      console.log(user._id);
+      //console.log(user._id);
     }
     Race.find({
       $or: [
         { author: idUser },
         { participants: { $elemMatch: { $eq: idUser } } },
       ],
+      // au dessus on utilise l'opérateur $elemMatch pour rechercher dans le tableau des participants
+      // de la collection "Race" l'élément qui est egale à la valeur de "idUser"
     })
       .populate('author', ['username', 'image'])
       .populate('participants', ['username'])
-      .sort({ date: 'asc' })
+      .sort({ date: 'asc' }) // Classe les résultats par ordre croissant de date
       .then((races) => {
         console.log('races où participe l user', races);
         if (!races) {
@@ -174,6 +181,7 @@ router.get('/add/:token', (req, res) => {
           return;
         }
         const formattedRaces = races.map((race) => {
+          // Formate les participants sous la forme "@username1, @username2" via le map
           const formattedParticipants = race.participants
             .map((participant) => `@${participant.username}`)
             .join(', ');

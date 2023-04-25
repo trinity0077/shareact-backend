@@ -177,7 +177,8 @@ router.post('/filter', async (req, res) => {
   //     res.json({ result: false, error: 'User not found' });
   //     return;
   //   }
-    Race.find({ date: { $gte: currentDate } }) // Populate and select specific fields to return (for security purposes)
+    Race.find({ date: { $gte: currentDate } }) 
+    // Populate and select specific fields to return (for security purposes)
       .populate('author', ['username', 'firstname'])
       .populate('admin', ['username', 'firstname'])
       .populate('participants', ['username', 'firstname'])
@@ -200,7 +201,7 @@ router.post('/filter', async (req, res) => {
                 { latitude: lat, longitude: lon },
                 { latitude: item.latitude, longitude: item.longitude }
               );
-              console.log(distanceFromLocation)
+              // console.log(distanceFromLocation)
               return distanceFromLocation <= distance;
             });
 
