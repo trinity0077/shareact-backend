@@ -8,13 +8,12 @@ const { checkBody } = require("../modules/checkBody");
 const bcrypt = require("bcrypt");
 const uid2 = require("uid2");
 
-// 3 const en dessou pour la save de la photo
+// 3 const pour la sauvegarde de la photo
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const uniqid = require('uniqid');
 
-// 2 variable pour avoir les info sur la route du 
-//dossier temporaire de vercelle
+// 2 variables pour avoir les infos sur la route du dossier temporaire de vercel
 const os = require('os');
 const path = require('path');
 
@@ -80,12 +79,12 @@ router.post("/signin", (req, res) => {
   );
 });
 
-//  route pour envoyé l'image à cloudinary et recuperer l url de l image en front
+//  route pour envoyer l'image à cloudinary et récupérer l'url de l image en front
 router.post('/upload', async (req, res) => {
 
   let id = uniqid() // generation d'un nom unique avec le module uniqid
   
-  const photoPath = `/tmp/${id}.jpg`; // acces au fichier temporaire de vercel /tmp/ et un id aleatoire en .jpg
+  const photoPath = `/tmp/${id}.jpg`; // accès au fichier temporaire de vercel /tmp/ et un id aléatoire en .jpg
   const resultMove = await req.files.photoFromFront.mv(photoPath); // move the photo sent in the request to the temporary file
   if (!resultMove) { // if the photo was successfully moved
 
@@ -146,7 +145,7 @@ router.put('/changesimageprofil', (req, res) => {
   });
 });
 
-// GET  pour renvoyé la liste des participants à un course
+// GET  pour renvoyer la liste des participants à une course
 router.get('/add/:token', (req, res) => {
   console.log('req.paramas.token', req.params.token);
   if (!req.params.token) {
@@ -163,13 +162,14 @@ router.get('/add/:token', (req, res) => {
       idUser = user._id;
       //console.log(user._id);
     }
+    // on utilise l'opérateur $elemMatch pour rechercher dans le tableau des participants de la collection "Race" l'élément qui est égal à la valeur de "idUser"
     Race.find({
       $or: [
         { author: idUser },
         { participants: { $elemMatch: { $eq: idUser } } },
       ],
-      // au dessus on utilise l'opérateur $elemMatch pour rechercher dans le tableau des participants
-      // de la collection "Race" l'élément qui est egale à la valeur de "idUser"
+      
+      
     })
       .populate('author', ['username', 'image'])
       .populate('participants', ['username'])
