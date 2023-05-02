@@ -13,9 +13,6 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const uniqid = require('uniqid');
 
-// 2 variables pour avoir les infos sur la route du dossier temporaire de vercel
-const os = require('os');
-const path = require('path');
 
 // Inscription
 router.post("/signup", (req, res) => {
