@@ -27,7 +27,7 @@ router.post("/signup", (req, res) => {
   }).then((data) => {
     console.log(data)
     if (data === null) {
-      const hash = bcrypt.hashSync(req.body.password, 10);
+      const hash = bcrypt.hashSync(req.body.password, 10); // Hash réalisé sur le mot de passe avec un nombre de tours (coût) 
       const newUser = new User({
         firstname: req.body.firstname,
         username: req.body.username,
