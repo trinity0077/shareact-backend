@@ -16,14 +16,14 @@ const uniqid = require('uniqid');
 
 // Inscription
 router.post("/signup", (req, res) => {
-  if (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender"])) {
+  if (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender",])) {
     console.log(req.body)
     res.json({ result: false, error: "Missing or empty fields" });
     return;
   }
   // Check if the user has not already been registered
   User.findOne({
-    email: { $regex: new RegExp(req.body.email, "i") },
+    email: { $regex: new RegExp(req.body.email, "i") }, // force l'email en minuscule.
   }).then((data) => {
     console.log(data)
     if (data === null) {
@@ -76,10 +76,12 @@ router.post("/signin", (req, res) => {
   );
 });
 
+
 //  route pour envoyer l'image à cloudinary et récupérer l'url de l image en front
 router.post('/upload', async (req, res) => {
 
-  let id = uniqid() // generation d'un nom unique avec le module uniqid
+  let id = uniqid() // generation d'un nom unique avec le module uniqid + argument possible ex : uniqid('user')
+  // ce qui ajoute un prefixe devant la chaine de caratere 
   
   const photoPath = `/tmp/${id}.jpg`; // accès au fichier temporaire de vercel /tmp/ et un id aléatoire en .jpg
   const resultMove = await req.files.photoFromFront.mv(photoPath); // move the photo sent in the request to the temporary file
