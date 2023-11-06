@@ -16,7 +16,7 @@ const uniqid = require('uniqid');
 
 // Inscription // checkbody full   (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender",]))
 router.post("/signup", (req, res) => {
-  if (!checkBody(req.body, ["email", "password",])) {
+  if (!checkBody(req.body, ["firstname", "username", "email", "password", "age", "gender",])) {
     console.log(req.body)
     res.json({ result: false, error: "Missing or empty fields" });
     return;
@@ -29,15 +29,13 @@ router.post("/signup", (req, res) => {
     if (data === null) {
       const hash = bcrypt.hashSync(req.body.password, 10); // Hash réalisé sur le mot de passe avec un nombre de tours (coût) 
       const newUser = new User({
-        // firstname: req.body.firstname,
-        // username: req.body.username,
+         firstname: req.body.firstname,
+         username: req.body.username,
         email: req.body.email,
         password: hash,
-        // image:req.body.image,
-        // age: new Date(req.body.age),
-        // gender: req.body.gender,
-        smokeCigarettes: [],
-        notSmokeCigarettes: [],
+         image:req.body.image,
+         age: new Date(req.body.age),
+         gender: req.body.gender,
         token: uid2(32),
         dateCreation: Date.now(),
       });
@@ -79,161 +77,7 @@ router.post("/signin", (req, res) => {
   );
 });
 
-// route pour obtenir les info cigarettes
 
-router.get("/addsmokecigarettes/:token", async (req, res) => {
-  try {
-    const { token } = req.params;
-
-    // Recherche de l'utilisateur par son token
-    const user = await User.findOne({ token });
-
-    if (!user) {
-      return res.json({ result: false, error: "User not found" });
-    }
-
-    // Ajout d'une nouvelle cigarette au tableau
-    const newCigarette = {
-      smokedCig: 1,
-      dateSmoked: new Date(),
-    };
-    user.smokeCigarettes.push(newCigarette);
-
-    console.log(newCigarette)
-    // Sauvegarde des modifications de l'utilisateur
-    await user.save();
-
-    
-    return res.json({ result: true, message: "Cigarette added successfully" });
-  } catch (error) {
-    console.error(error);
-    
-    return res.json({ result: false, error: "Failed to add cigarette" });
-  }
-});
-
-
-router.delete("/deletesmokecigarettes/:token", async (req, res) => {
-  try {
-    const { token } = req.params;
-
-    // Recherche de l'utilisateur par son token
-    const user = await User.findOne({ token });
-
-    if (!user) {
-      
-      return res.json({ result: false, error: "User not found" });
-    }
-
-    // Vérification s'il y a des cigarettes fumées
-    if (user.smokeCigarettes.length === 0) {
-      
-      return res.json({ result: false, error: "No cigarettes smoked" });
-    }
-
-    // Suppression de la dernière cigarette fumée du tableau
-    user.smokeCigarettes.pop();
-
-    // Sauvegarde des modifications de l'utilisateur
-    await user.save();
-    
-    return res.json({ result: true, message: "Last cigarette removed successfully" });
-  } catch (error) {
-    console.error(error);
-    
-    return res.json({ result: false, error: "Failed to remove last cigarette" });
-  }
-});
-
-
-
-router.get("/addnotsmokecigarettes/:token", async (req, res) => {
-  try {
-    const { token } = req.params;
-
-    // Recherche de l'utilisateur par son token
-    const user = await User.findOne({ token });
-
-    if (!user) {
-      return res.json({ result: false, error: "User not found" });
-    }
-
-    // Ajout d'une nouvelle cigarette au tableau
-    const newNoCigarette = {
-      notSmokedCig: 1,
-      datenotSmoked: new Date(),
-    };
-    user.NotSmokedcigarettes.push(newNoCigarette);
-
-    // Sauvegarde des modifications de l'utilisateur
-    await user.save();
-
-    return res.json({ result: true, message: "NotSmokedcigarette added successfully" });
-  } catch (error) {
-    console.error(error);
-    return res.json({ result: false, error: "Failed to add NotSmokedcigarette" });
-  }
-});
-
-
-router.delete("/deletenotsmokecigarettes/:token", async (req, res) => {
-  try {
-    const { token } = req.params;
-
-    // Recherche de l'utilisateur par son token
-    const user = await User.findOne({ token });
-    
-    if (!user) {
-      return res.json({ result: false, error: "User not found" });
-    }
-
-    // Vérification s'il y a des cigarettes fumées
-    console.log(user.NotSmokedcigarettes.length)
-    if (user.NotSmokedcigarettes.length === 0) {
-      return res.json({ result: false, error: "No NotSmokedcigarette to delete" });
-    }
-
-    // Suppression de la dernière cigarette fumée du tableau
-    user.NotSmokedcigarettes.pop();
-
-    // Sauvegarde des modifications de l'utilisateur
-    await user.save();
-
-    return res.json({ result: true, message: "Last NotSmokedcigarette removed successfully" });
-  } catch (error) {
-    console.error(error);
-    return res.json({ result: false, error: "Failed to remove last NotSmokedcigarette" });
-  }
-});
-  
-
-router.get("/datasmoke/:token", async (req, res) => {
-  try {
-    const { token } = req.params;
-
-    // Recherche de l'utilisateur par son token
-    const user = await User.findOne({ token });
-
-    if (!user) {
-      return res.json({ result: false, error: "User not found" });
-    }
-
-    const userDataSmoke = user.smokeCigarettes.map((cigarette) => ({
-      smokedCig: cigarette.smokedCig,
-      dateSmoked: cigarette.dateSmoked,
-    }));
-
-    const userDataNotSmoked = user.NotSmokedcigarettes.map((cigarette) => ({
-      notSmokedCig: cigarette.notSmokedCig,
-      datenotSmoked: cigarette.datenotSmoked,
-    }));
-
-    return res.json({ result: true, userDataSmoke, userDataNotSmoked });
-  } catch (error) {
-    console.error(error);
-    return res.json({ result: false, error: "Failed to find data for this user" });
-  }
-});
 
 
 
@@ -257,8 +101,6 @@ router.post('/upload', async (req, res) => {
     res.json({ result: false, error: resultMove }); 
   }
 });
-
-
 
 
 // PUT pour modifier le profil
